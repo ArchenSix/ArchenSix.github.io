@@ -52,24 +52,31 @@ var theBigLoop = setInterval(function() { //make page run gameloop
     frameDelay);
 
 function handleClick(event) {
-    if (matchingPattern) {
-        var targetX = pattern[0][matchDot] * (boxSide + lineW) + lineW + boxSide/2;
-        var targetY = pattern[1][matchDot] * (boxSide + lineW) + lineW + boxSide/2;
-        console.log(event.offsetX + " " + event.offsetY);
-        if (Math.abs(event.offsetX - targetX) < boxSide/2 && Math.abs(event.offsetY - targetY) < boxSide/2) {
-            console.log("You clicked dot #" + (matchDot + 1));
-            matchDot++;
-            score++;
-            document.getElementById("scoreDisplay").innerHTML = "Score: " + score;
-        }
-        else {
-          terminate();
-          gg = true;
-        }
-        if (matchDot == pattern[0].length) {
-            matchDot = 0;
-            matchingPattern = false;
-            finishPattern = true;
+    if (!gg) {
+        if (matchingPattern) {
+            if (matchDot == pattern[0].length) {
+                gameBoard[pattern[0][matchDot - 1]][pattern[1][matchDot - 1]] = 0; //clears green square
+                matchDot = 0;
+                matchingPattern = false;
+                finishPattern = true;
+            }
+            if (matchDot > 0) {
+                gameBoard[pattern[0][matchDot - 1]][pattern[1][matchDot - 1]] = 0; //clears green square
+            }
+            var targetX = pattern[0][matchDot] * (boxSide + lineW) + lineW + boxSide / 2;
+            var targetY = pattern[1][matchDot] * (boxSide + lineW) + lineW + boxSide / 2;
+            console.log(event.offsetX + " " + event.offsetY);
+            if (Math.abs(event.offsetX - targetX) < boxSide / 2 && Math.abs(event.offsetY - targetY) < boxSide / 2) {
+                console.log("You clicked dot #" + (matchDot + 1));
+                gameBoard[pattern[0][matchDot]][pattern[1][matchDot]] = 2; //makes squares you got correct green
+                matchDot++;
+                score++;
+                document.getElementById("scoreDisplay").innerHTML = "Score: " + score;
+            }
+            else {
+                terminate();
+                gg = true;
+            }
         }
     }
 }
@@ -116,32 +123,38 @@ function gameLoop() {
             finishPattern = false;
         }
         if (!matchingPattern) {
-            if(everyOther){
+            if (everyOther) {
                 if (patternLength > 0) {
                     gameBoard[pattern[0][patternLength - 1]][pattern[1][patternLength - 1]] = 0; //removes all but final dot?
                 }
                 everyOther = false;
             }
-            else{
-            if (patternLength < dotNumber) { //make a pattern to follow
-                var dotX = Math.floor(Math.random() * gridSize); //x coord of dot
-                var dotY = Math.floor(Math.random() * gridSize); //y coord of dot
-                pattern[0][patternLength] = dotX;
-                pattern[1][patternLength] = dotY;
-                gameBoard[dotX][dotY] = -1;
-                patternLength++;
-                everyOther = true;
-            }
-            else { //lemme try something different
-                gameBoard[pattern[0][patternLength - 1]][pattern[1][patternLength - 1]] = 0; //removes final dot
-                patternLength = 0;
-                level++;
-                matchingPattern = true;
-            }
+            else {
+                if (patternLength < dotNumber) { //make a pattern to follow
+                    var dotX = Math.floor(Math.random() * gridSize); //x coord of dot
+                    var dotY = Math.floor(Math.random() * gridSize); //y coord of dot
+                    pattern[0][patternLength] = dotX;
+                    pattern[1][patternLength] = dotY;
+                    gameBoard[dotX][dotY] = -1;
+                    patternLength++;
+                    everyOther = true;
+                }
+                else { //lemme try something different
+                    gameBoard[pattern[0][patternLength - 1]][pattern[1][patternLength - 1]] = 0; //removes final dot
+                    patternLength = 0;
+                    level++;
+                    matchingPattern = true;
+                }
             }
         }
     }
     drawGame();
+    if (matchDot == pattern[0].length) {
+        gameBoard[pattern[0][matchDot - 1]][pattern[1][matchDot - 1]] = 0; //clears green square
+        matchDot = 0;
+        matchingPattern = false;
+        finishPattern = true;
+    }
 }
 
 function drawGame() {
@@ -187,20 +200,18 @@ function drawGame() {
             ctx.fillRect(lineW + (boxSide + lineW) * boxX, lineW + (boxSide + lineW) * boxY, boxSide, boxSide);
         }
     }
-    if(gg){
+    if (gg) {
         ctx.font = "24pt sans-serif";
         ctx.textAlign = "center";
         ctx.fillStyle = "black";
-        ctx.fillText("Game Over", canvas.width/2, canvas.height/2);
+        ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
     }
 }
 
-function terminate(){
-    for (var i = 0; i < gameBoard.length; i++)
-    {
-        for (var j = 0; j < gameBoard[0].length; j++)
-        {
-           gameBoard[i][j]=1;
+function terminate() {
+    for (var i = 0; i < gameBoard.length; i++) {
+        for (var j = 0; j < gameBoard[0].length; j++) {
+            gameBoard[i][j] = 1;
         }
     }
 
