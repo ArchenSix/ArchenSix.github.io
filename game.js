@@ -17,7 +17,7 @@ levelText.innerHTML = "Level: 1";
 scoreText.id = "scoreDisplay";
 scoreText.innerHTML = "Score: 0"; //starts out as 0, will update whenever a point is added
 title.id = "titleText";
-title.innerHTML = "Dots";
+title.innerHTML = "Pattern Chaser";
 document.body.appendChild(title);
 document.body.appendChild(levelText);
 document.body.appendChild(scoreText);
@@ -63,7 +63,8 @@ function handleClick(event) {
             document.getElementById("scoreDisplay").innerHTML = "Score: " + score;
         }
         else {
-            //Punishment to be added
+          terminate();
+          gg = true;
         }
         if (matchDot == pattern[0].length) {
             matchDot = 0;
@@ -186,4 +187,21 @@ function drawGame() {
             ctx.fillRect(lineW + (boxSide + lineW) * boxX, lineW + (boxSide + lineW) * boxY, boxSide, boxSide);
         }
     }
+    if(gg){
+        ctx.font = "24pt sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillStyle = "black";
+        ctx.fillText("Game Over", canvas.width/2, canvas.height/2);
+    }
+}
+
+function terminate(){
+    for (var i = 0; i < gameBoard.length; i++)
+    {
+        for (var j = 0; j < gameBoard[0].length; j++)
+        {
+           gameBoard[i][j]=1;
+        }
+    }
+
 }
